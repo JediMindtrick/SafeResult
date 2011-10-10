@@ -1,0 +1,29 @@
+This class is meant to be used primarily when undertaking a large batch job 
+where the failure of one operation should not cancel the whole batch.  This can
+be useful when using third-party libraries, undertaking risky operations, or
+to assist in providing useful error information to end-users.
+
+For example:
+
+SafeResult<bool> myMethodResult = new SafeResult<bool>();
+myMethodResult.Result = true;
+myMethodResult.Status = SAFE_RESULT.Success;
+
+foreach(var file in files){
+    bool result = DoSomethingRisky(file);//maybe even wrapped in a try-catch
+    if(!result){
+        myMethodResult.logError("Failed operation for {0}.",file);
+    }
+}
+
+myMethodResult.changeSuccessIfErrors();
+
+return myMethodResult;
+
+
+//you can do something in the calling method with the Errors, like error logging
+foreach(var err in someResult.Errors){
+    //custom error logging
+    logError(err);
+}
+
